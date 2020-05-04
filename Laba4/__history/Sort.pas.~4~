@@ -1,0 +1,114 @@
+unit Sort;
+
+interface
+
+  uses Winapi.Windows, System.SysUtils, Vcl.Graphics, Vcl.Forms, Vcl.ExtCtrls;
+
+  type
+
+    rec = record
+      key : integer;
+    end;
+
+    mas = array [1..100] of rec;
+
+    procedure Sliv(var a:mas;p,q : integer;Image1: TImage);
+    procedure SortMas(var a:mas;p,q : integer;Image1:TImage);
+    procedure printMas(X: mas; start,n: integer; Image1: TImage; top : integer = 0);
+    procedure printWhite(X: mas; n: integer; Image1: TImage; top : integer = 0);
+
+implementation
+
+  procedure Sliv(var a:mas;p,q : integer;Image1: TImage); //процедура сливающая массивы, p-начало, q-конец
+  var r,i,j,k : integer;
+      b:mas;
+  begin
+    r:=(p+q) div 2;{делим массив}
+    i:=p;{начало левой половины}
+    j:=r+1;{начало правой половины}
+    printMas(a,i,r,Image1,100);
+    printMas(a,r+1,q,Image1,200);
+    Sleep(1000);
+    Application.ProcessMessages;
+    for k:=p to q do{смотрим от начала до конца}
+    if (i<=r) and ((j>q) or (a[i].key<a[j].key)) then {переставляем элементы из половин в новый массив, упорядочивая пары}
+      begin
+       b[k]:=a[i];
+       i:=i+1;
+      end
+    else
+      begin
+       b[k]:=a[j];
+       j:=j+1;
+      end ;
+    for k:=p to q do
+      a[k]:=b[k];
+    printMas(a,1,q,Image1);
+    printWhite(a,q,Image1,100);
+    printWhite(a,q,Image1,200);
+    Sleep(1000);
+    Application.ProcessMessages;
+  end;
+
+  {рекурсивная процедура сортировки, проверяет если осталось
+  больше одного элемента, повторяет слияние в левой или правой частях массива}
+  procedure SortMas(var a:mas;p,q : integer; Image1:TImage); //p,q - индексы начала и конца сортируемой части массива
+  begin
+    if p<q then {массив из одного элемента тривиально упорядочен}
+    begin
+      SortMas(a,p,(p+q) div 2,Image1);
+      SortMas(a,(p+q) div 2 + 1,q,Image1);
+      Sliv(a,p,q,Image1);
+
+    end;
+
+  end;
+
+  procedure printMas(X: mas; start,n: integer; Image1: TImage; top : integer = 0);
+  var i,block, ShapeLeft, ShapeTop: Integer;
+  begin
+    ShapeLeft := 0;
+    ShapeTop := 4 + top;
+    block:=10;
+    for i:=start to n do
+    begin
+      Image1.Canvas.Pen.Width := 4;
+      Image1.Canvas.Pen.Color := clBtnText;
+      Image1.Canvas.Brush.Color := clWhite;
+      ShapeLeft := ShapeLeft+50;
+      Image1.Canvas.Rectangle(ShapeLeft, ShapeTop, ShapeLeft+50, ShapeTop+50);
+      Image1.Canvas.Font.Size := 7;
+      Image1.Canvas.TextOut ( ShapeLeft+17, ShapeTop+20,' '+IntToStr(x[i].key));
+      if i=block then
+      begin
+        ShapeTop:=ShapeTop+50;
+        ShapeLeft:=0;
+        block:=block+10;
+      end;
+    end;
+  end;
+
+  procedure printWhite(X: mas; n: integer; Image1: TImage; top : integer = 0);
+  var i,block, ShapeLeft, ShapeTop: Integer;
+  begin
+    ShapeLeft := 0;
+    ShapeTop := 4 + top;
+    block:=10;
+    for i:=1 to n do
+    begin
+      Image1.Canvas.Pen.Width := 4;
+      Image1.Canvas.Pen.Color := clWhite;
+      Image1.Canvas.Brush.Color := clWhite;
+      ShapeLeft := ShapeLeft+50;
+      Image1.Canvas.Rectangle(ShapeLeft, ShapeTop, ShapeLeft+50, ShapeTop+50);
+      Image1.Canvas.Font.Size := 7;
+
+      if i=block then
+      begin
+        ShapeTop:=ShapeTop+50;
+        ShapeLeft:=0;
+        block:=block+10;
+      end;
+    end;
+  end;
+end.

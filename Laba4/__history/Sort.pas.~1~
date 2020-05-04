@@ -1,0 +1,45 @@
+unit Sort;
+
+interface
+  type
+    mas = array [1..100] of integer;
+
+    procedure Sliv(var a:mas;p,q : integer);
+    procedure SortMas(var a:mas;p,q : integer);
+
+implementation
+
+  procedure Sliv(var a:mas;p,q : integer); //процедура сливающая массивы, p-начало, q-конец
+  var r,i,j,k : integer;
+      b:mas;
+  begin
+    r:=(p+q) div 2;{делим массив}
+    i:=p;{начало левой половины}
+    j:=r+1;{начало правой половины}
+    for k:=p to q do{смотрим от начала до конца}
+    if (i<=r) and ((j>q) or (a[i]<a[j])) then {переставляем элементы из половин в новый массив, упорядочивая пары}
+      begin
+       b[k]:=a[i];
+       i:=i+1;
+      end
+    else
+      begin
+       b[k]:=a[j];
+       j:=j+1;
+      end ;
+    for k:=p to q do
+      a[k]:=b[k];
+  end;
+
+  {рекурсивная процедура сортировки, проверяет если осталось
+  больше одного элемента, повторяет слияние в левой или правой частях массива}
+  procedure SortMas(var a:mas;p,q : integer); //p,q - индексы начала и конца сортируемой части массива
+  begin
+    if p<q then {массив из одного элемента тривиально упорядочен}
+    begin
+      SortMas(a,p,(p+q) div 2);
+      SortMas(a,(p+q) div 2 + 1,q);
+      Sliv(a,p,q);
+    end;
+  end;
+end.
